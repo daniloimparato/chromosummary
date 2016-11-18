@@ -1,7 +1,17 @@
-var chrWidth = 22;
+var marginRight = 10;
+var marginLeft = 10;
 var marginTop = 10;
+var marginBottom = 10;
+
+var outerWidth = 720;
+var outerHeight = 480;
+var innerWidth = outerWidth - marginLeft - marginRight;
+var innerHeight = outerHeight - marginTop - marginBottom;
+
+var chrWidth = 22;
 var spacing = 10;
 var strokeColor = "#BBB";
+var labelMargin = 10;
 
 var chromosomesData = [
     {
@@ -42,6 +52,10 @@ var chromosomesData = [
             {
                 "pos": 120,
                 "label": "Teste 2",
+            },
+            {
+                "pos": 125,
+                "label": "Teste 3",
             }
         ]
     }
@@ -49,9 +63,12 @@ var chromosomesData = [
 
 chromosomesData.sort(function(a,b) { return b.size - a.size });
 
+// var xScale = d3.scale.linear().range([0,innerWidth]).domain([0,outerWidth]);
+// var yScale = d3.scale.linear().range([0,innerHeight]).domain([0,outerHeight]);
+
 var svg = d3.select("body").append("svg")
-                           .attr("width", 200)
-                           .attr("height", 200);
+                           .attr("width", outerWidth)
+                           .attr("height", outerHeight);
 
 var chromosomes = svg.selectAll("g")
                      .data(chromosomesData)
@@ -86,7 +103,13 @@ var annot = chromosomes.selectAll("line")
                      .attr("x1", 0)
                      .attr("y1", function(d) { return d.pos; })
                      .attr("x2", chrWidth)
-                     .attr("y2", function(d) { return d.pos; });
+                     .attr("y2", function(d) { return d.pos; })
+                     .attr("x3", 200)
+                     .attr("y3", function(d) { return d.pos; });
+
+function labelLine(){
+
+}
 
 // var rectangle = svg.selectAll("rect")
 //                             .data(chromosomes)
