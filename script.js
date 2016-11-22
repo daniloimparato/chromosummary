@@ -96,7 +96,7 @@ var lowerArms = chromosomes.append("g")
                       .attr("stroke", strokeColor);
 
 var annot = chromosomes.selectAll("line")
-                     .data(function(d){ console.log(d); return d.phenotype; })
+                     .data(function(d){ return d.phenotype; })
                      .enter()
                      .append("line")
                      .style("stroke", "#000")
@@ -106,10 +106,6 @@ var annot = chromosomes.selectAll("line")
                      .attr("y2", function(d) { return d.pos; })
                      .attr("x3", 200)
                      .attr("y3", function(d) { return d.pos; });
-
-function labelLine(){
-
-}
 
 // var rectangle = svg.selectAll("rect")
 //                             .data(chromosomes)
