@@ -22,8 +22,10 @@ var chromosomesData = [
         "phenotype":
         [
             { "pos": 40, "label": "Teste 1", },
-            { "pos": 120, "label": "Teste 2", },
-            { "pos": 125, "label": "Teste 3", }
+            { "pos": 43, "label": "Teste 2", },
+            { "pos": 46, "label": "Teste 3", },
+            { "pos": 120, "label": "Teste 4", },
+            { "pos": 125, "label": "Teste 5", }
         ]
     },
     {
@@ -42,7 +44,9 @@ var chromosomesData = [
         [
             { "pos": 40, "label": "Teste 1", },
             { "pos": 120, "label": "Teste 2", },
-            { "pos": 125, "label": "Teste 3", }
+            { "pos": 125, "label": "Teste 3", },
+            { "pos": 130, "label": "Teste 4", },
+            { "pos": 135, "label": "Teste 5", }
         ]
     },
     { "size": 180, "centromere": 100, "phenotype": [ { "pos": 40, "label": "Teste 1", }, { "pos": 120, "label": "Teste 2", }, { "pos": 125, "label": "Teste 3", } ] },
@@ -73,12 +77,12 @@ var innerHeight = outerHeight - marginTop - marginBottom;
 var chrWidth = 22;
 var borderRadius = 10;
 var spacing = 10;
-var strokeColor = "#BBB";
 var labelMargin = 10;
 
 var tipOffSetX = 20;
 var tipOffSetY = 10;
 var tipCircleRadius = 8;
+var overlapThreshold = 1.5 * tipCircleRadius;
 
 var blurAmount = 3;
 var blurAlpha = 0.4;
@@ -130,11 +134,15 @@ feMerge.append("feMergeNode").attr("in", "SourceGraphic");
 ******************************/
 
 var chromosomes = svg.selectAll("g")
-                     .data(chromosomesData)
-                     .enter()
-                     .append("g")
-                     .attr("class","chromosome-group")
-                     .attr("transform", function(d,i) { return "translate(" + (x(i % chromosomesPerLine) - chrWidth/2) + "," + y(Math.floor(i/chromosomesPerLine)) + ")"; });
+                    .data(chromosomesData)
+                    .enter()
+                    .append("g")
+                    .attr("class","chromosome-group")
+                    .attr("transform", function(d,i) {
+                        var xPos = (x(i % chromosomesPerLine) - chrWidth/2 - tipOffSetX/2 - tipCircleRadius/2);
+                        var yPos = y(Math.floor(i/chromosomesPerLine));
+                        return "translate(" + xPos + "," + yPos + ")"
+                    });
 
 var upperArms = chromosomes.append("rect")
                         .attr("rx", borderRadius)
@@ -151,9 +159,30 @@ var lowerArms = chromosomes.append("rect")
 
 var annotation = chromosomes.selectAll("g")
                             .data(function(d){
-                                return d.phenotype.map(function(p){
-                                    return { pos: p.pos, label: p.label, lower: (p.pos > d.centromere) }
-                                });
+                                d.phenotype = d.phenotype.sort(function(x, y){ return d3.ascending(x.pos, y.pos) });
+                                var offsets = 0;
+                                var offsetsBeforeCentromere = 0;
+                                var phenotype = d.phenotype.map(function(p, i){
+                                    var overlapOffset = 0;
+                                    var direction = (p.pos > d.centromere ? 1 : -1);
+                                    if (i>0){
+                                        var dist = d.phenotype[i].pos - d.phenotype[i-1].pos;
+                                        overlapOffset = dist < overlapThreshold ? overlapThreshold - dist : 0;
+                                        offsets += overlapOffset;
+                                        offsetsBeforeCentromere += direction == -1 ? overlapOffset : 0;
+                                    }
+                                    return {
+                                        pos: p.pos,
+                                        label: p.label,
+                                        direction: direction,
+                                        overlapOffset: offsets
+                                    }
+                                });                                
+                                phenotype = phenotype.map(function(p){
+                                    p.offsetFix = offsetsBeforeCentromere;
+                                    return p
+                                })
+                                return phenotype
                             })
                             .enter()
                             .append("g")
@@ -164,12 +193,12 @@ var annotationLines = annotation.append("polyline")
                                     return pl([
                                         [0, d.pos],
                                         [chrWidth, d.pos],
-                                        [chrWidth + tipOffSetX, d.pos + (d.lower ? 1 : -1) * tipOffSetY]
+                                        [chrWidth + tipOffSetX, d.overlapOffset + d.pos + (d.direction * tipOffSetY) - d.offsetFix]
                                     ])
                                 });
 
 var annotationCircles = annotation.append("circle")   
                                 .attr("cx", chrWidth + tipOffSetX )
-                                .attr("cy", function(d) { return d.pos + (d.lower ? 1 : -1) * tipOffSetY })
+                                .attr("cy", function(d) { return d.overlapOffset + d.pos + (d.direction * tipOffSetY) - d.offsetFix })
                                 .attr("r", tipCircleRadius)
-                                .attr("fill", "#FF0000");
+                                .attr("class", "tip-human");
