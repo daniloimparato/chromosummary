@@ -54,6 +54,10 @@ chromosomesData = chromosomesData.sort(function(x, y){
    return d3.descending(x.size, y.size);
 })
 
+function pl(arr){
+    return(arr.map(function(x){return x.join()}).join(" "));
+}
+
 var marginRight = 100;
 var marginLeft = 100;
 var marginTop = 25;
@@ -71,6 +75,10 @@ var borderRadius = 10;
 var spacing = 10;
 var strokeColor = "#BBB";
 var labelMargin = 10;
+
+var tipOffSetX = 20;
+var tipOffSetY = 10;
+var tipCircleRadius = 8;
 
 var blurAmount = 3;
 var blurAlpha = 0.4;
@@ -128,29 +136,40 @@ var chromosomes = svg.selectAll("g")
                      .attr("class","chromosome-group")
                      .attr("transform", function(d,i) { return "translate(" + (x(i % chromosomesPerLine) - chrWidth/2) + "," + y(Math.floor(i/chromosomesPerLine)) + ")"; });
 
-var upperArms = chromosomes
-                        .append("rect")
+var upperArms = chromosomes.append("rect")
                         .attr("rx", borderRadius)
                         .attr("ry", borderRadius)
                         .attr("width", chrWidth)
                         .attr("height", function(d){ return d.centromere });
-                        //.attr("transform", function(d,i) { return "translate(-" + chrWidth/2 +",-10)"; });
 
-var lowerArms = chromosomes
-                      .append("rect")
-                      .attr("rx", borderRadius)
-                      .attr("ry", borderRadius)
-                      .attr("width", chrWidth)
-                      .attr("transform", function(d,i) { return "translate(0," + d.centromere + ")"; })
-                      .attr("height", function(d){ return (d.size - d.centromere) });
+var lowerArms = chromosomes.append("rect")
+                        .attr("rx", borderRadius)
+                        .attr("ry", borderRadius)
+                        .attr("width", chrWidth)
+                        .attr("transform", function(d,i) { return "translate(0," + d.centromere + ")"; })
+                        .attr("height", function(d){ return (d.size - d.centromere) });
 
-var annot = chromosomes.selectAll("line")
-                     .data(function(d){ return d.phenotype; })
-                     .enter()
-                     .append("line")
-                     .attr("x1", 0)
-                     .attr("y1", function(d) { return d.pos; })
-                     .attr("x2", chrWidth)
-                     .attr("y2", function(d) { return d.pos; })
-                     .attr("x3", 200)
-                     .attr("y3", function(d) { return d.pos; });
+var annotation = chromosomes.selectAll("g")
+                            .data(function(d){
+                                return d.phenotype.map(function(p){
+                                    return { pos: p.pos, label: p.label, lower: (p.pos > d.centromere) }
+                                });
+                            })
+                            .enter()
+                            .append("g")
+                            .attr("class","annot");
+
+var annotationLines = annotation.append("polyline")
+                                .attr("points", function(d) {
+                                    return pl([
+                                        [0, d.pos],
+                                        [chrWidth, d.pos],
+                                        [chrWidth + tipOffSetX, d.pos + (d.lower ? 1 : -1) * tipOffSetY]
+                                    ])
+                                });
+
+var annotationCircles = annotation.append("circle")   
+                                .attr("cx", chrWidth + tipOffSetX )
+                                .attr("cy", function(d) { return d.pos + (d.lower ? 1 : -1) * tipOffSetY })
+                                .attr("r", tipCircleRadius)
+                                .attr("fill", "#FF0000");
