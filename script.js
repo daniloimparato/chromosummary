@@ -9,7 +9,7 @@ var chromosomesData = [
     },
     {
         "size": 120,
-        "centromere": 60,
+        "centromere": 50,
         "phenotype":
         [
             { "pos": 20, "label": "Teste 1", },
@@ -18,14 +18,15 @@ var chromosomesData = [
     },
     {
         "size": 180,
-        "centromere": 100,
+        "centromere": 70,
         "phenotype":
         [
             { "pos": 40, "label": "Teste 1", },
             { "pos": 43, "label": "Teste 2", },
             { "pos": 46, "label": "Teste 3", },
-            { "pos": 120, "label": "Teste 4", },
-            { "pos": 125, "label": "Teste 5", }
+            { "pos": 65, "label": "Teste 4", },
+            { "pos": 120, "label": "Teste 5", },
+            { "pos": 125, "label": "Teste 6", }
         ]
     },
     {
@@ -39,7 +40,7 @@ var chromosomesData = [
     },
     {
         "size": 180,
-        "centromere": 100,
+        "centromere": 80,
         "phenotype":
         [
             { "pos": 40, "label": "Teste 1", },
@@ -49,9 +50,9 @@ var chromosomesData = [
             { "pos": 135, "label": "Teste 5", }
         ]
     },
-    { "size": 180, "centromere": 100, "phenotype": [ { "pos": 40, "label": "Teste 1", }, { "pos": 120, "label": "Teste 2", }, { "pos": 125, "label": "Teste 3", } ] },
-    { "size": 180, "centromere": 100, "phenotype": [ { "pos": 40, "label": "Teste 1", }, { "pos": 120, "label": "Teste 2", }, { "pos": 125, "label": "Teste 3", } ] },
-    { "size": 180, "centromere": 100, "phenotype": [ { "pos": 40, "label": "Teste 1", }, { "pos": 120, "label": "Teste 2", }, { "pos": 125, "label": "Teste 3", } ] },
+    { "size": 180, "centromere": 90, "phenotype": [ { "pos": 40, "label": "Teste 1", }, { "pos": 120, "label": "Teste 2", }, { "pos": 125, "label": "Teste 3", } ] },
+    { "size": 180, "centromere": 50, "phenotype": [ { "pos": 40, "label": "Teste 1", }, { "pos": 120, "label": "Teste 2", }, { "pos": 125, "label": "Teste 3", } ] },
+    { "size": 180, "centromere": 70, "phenotype": [ { "pos": 75, "label": "Teste 1", }, { "pos": 80, "label": "Teste 2", }, { "pos": 125, "label": "Teste 3", } ] },
 ];
 
 chromosomesData = chromosomesData.sort(function(x, y){
