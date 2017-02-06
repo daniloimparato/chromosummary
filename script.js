@@ -8,7 +8,7 @@ d3.tsv("calli_chromosomes.tsv",function(err,chromosomesData){
 });
 
 function getPhenotype(chromosomesData){
-    d3.tsv("calli_phenotype.tsv",function(err,phenotypeData){
+    d3.tsv("calli_gwas.tsv",function(err,phenotypeData){
         phenotypeData.map(function(phenotype){
             phenotype.position = parseInt(phenotype.position);
             chromosomesData.filter(function(chromosome){
@@ -18,19 +18,6 @@ function getPhenotype(chromosomesData){
         chromosummary(chromosomesData);
     });
 }
-
-d3.tsv("chromosomes.tsv",function(err,chromosomesData){
-    chromosomesData.map(function(chromosome){
-        chromosome.phenotype = [];
-    });
-    d3.tsv("phenotype.tsv",function(err,phenotypeData){
-        phenotypeData.map(function(phenotype){
-            chromosomesData.filter(function(chromosome){
-                return chromosome.chrname==phenotype.chrname;
-            })[0].phenotype.push(phenotype);
-        })
-     })
-});
 
 function pl(arr){
     return(arr.map(function(x){return x.join()}).join(" "));
@@ -49,7 +36,7 @@ function chromosummary(chromosomesData){
     var ySpacing = 70;
 
     var outerWidth = 1080;
-    var outerHeight = 720;
+    var outerHeight = 1080;
     var innerWidth = outerWidth - marginLeft - marginRight;
     var innerHeight = outerHeight - marginTop - marginBottom;
 
@@ -78,7 +65,7 @@ function chromosummary(chromosomesData){
 
     var chromosomeHeight = d3.scaleLinear()
             .domain([0, chromosomeMaxSize])
-            .range([0, 300]);
+            .range([0, 500]);
 
     var maxLineIndex = Math.ceil(chromosomesData.length / chromosomesPerLine) - 1;
     var yMax = maxLineIndex * (ySpacing + chromosomeHeight(chromosomeMaxSize));
