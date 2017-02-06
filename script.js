@@ -47,8 +47,8 @@ function chromosummary(chromosomesData){
 
     var tipOffSetX = 20;
     var tipOffSetY = 10;
-    var tipCircleRadius = 6;
-    var overlapThreshold = 1.5 * tipCircleRadius;
+    var tipCircleRadius = 4;
+    var overlapThreshold = 1 * tipCircleRadius;
 
     var blurAmount = 3;
     var blurAlpha = 0.4;
@@ -76,7 +76,11 @@ function chromosummary(chromosomesData){
 
     var svg = d3.select("body").append("svg")
                             .attr("width", outerWidth)
-                            .attr("height", outerHeight);
+                            .attr("height", outerHeight)
+                            .call(d3.zoom().on("zoom", function () {
+                                svg.attr("transform", d3.event.transform)
+                            }))
+                            .append("g");
 
     /******************************
     /* filters go in defs element
