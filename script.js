@@ -24,31 +24,31 @@ function pl(arr){
 }
 
 function chromosummary(chromosomesData){
-    chromosomesData = chromosomesData.sort(function(x, y){
+    chromosomesData.sort(function(x, y){
         return d3.descending(x.size, y.size);
     });
 
     var marginRight = 100;
     var marginLeft = 100;
-    var marginTop = 25;
+    var marginTop = 75;
     var marginBottom = 25;
 
-    var ySpacing = 70;
+    var ySpacing = 200;
 
-    var outerWidth = 1080;
+    var outerWidth = 1280;
     var outerHeight = 1080;
     var innerWidth = outerWidth - marginLeft - marginRight;
     var innerHeight = outerHeight - marginTop - marginBottom;
 
-    var chrWidth = 20;
+    var chrWidth = 18;
     var borderRadius = 10;
     var spacing = 10;
     var labelMargin = 10;
 
-    var tipOffSetX = 20;
+    var tipOffSetX = 22;
     var tipOffSetY = 10;
     var tipCircleRadius = 4;
-    var overlapThreshold = 1 * tipCircleRadius;
+    var overlapThreshold = 1.5 * tipCircleRadius;
 
     var blurAmount = 3;
     var blurAlpha = 0.4;
@@ -65,7 +65,7 @@ function chromosummary(chromosomesData){
 
     var chromosomeHeight = d3.scaleLinear()
             .domain([0, chromosomeMaxSize])
-            .range([0, 500]);
+            .range([0, 400]);
 
     var maxLineIndex = Math.ceil(chromosomesData.length / chromosomesPerLine) - 1;
     var yMax = maxLineIndex * (ySpacing + chromosomeHeight(chromosomeMaxSize));
@@ -135,47 +135,94 @@ function chromosummary(chromosomesData){
 
     var annotation = chromosomes.selectAll("g")
                                 .data(function(d){
-                                    d.phenotype = d.phenotype.sort(function(x, y){ return d3.ascending(x.position, y.position) });
-                                    var offsets = 0;
-                                    var offsetsBeforeCentromere = 0;
-                                    var phenotype = d.phenotype.map(function(p, i){
-                                        var overlapOffset = 0;
-                                        var direction = (p.position > d.centromere ? 1 : -1);
+                                    var upperAnnotation = d.phenotype.filter(function(p){ return p.position <= d.centromere })
+                                                                     .sort(function(x, y){ return d3.descending(x.position, y.position) });
+
+                                    upperAnnotation.map(function(p, i){
+                                        p.overlapOffset = 0;
+                                        p.direction = (p.position > d.centromere ? 1 : -1);
                                         if (i>0){
-                                            var dist = chromosomeHeight(d.phenotype[i].position - d.phenotype[i-1].position);
-                                            overlapOffset = dist < overlapThreshold ? overlapThreshold - dist : 0;
-                                            offsets += overlapOffset;
-                                            offsetsBeforeCentromere += direction == -1 ? overlapOffset : 0;
+                                            var dist = (chromosomeHeight(upperAnnotation[i-1].position) + upperAnnotation[i-1].overlapOffset) - chromosomeHeight(upperAnnotation[i].position);
+                                            p.overlapOffset = dist < overlapThreshold ? dist - overlapThreshold : 0;
                                         }
-                                        return {
-                                            position: p.position,
-                                            label: p.label,
-                                            direction: direction,
-                                            overlapOffset: offsets
+                                    });
+
+
+                                    var lowerAnnotation = d.phenotype.filter(function(p){ return p.position > d.centromere })
+                                                                     .sort(function(x, y){ return d3.ascending(x.position, y.position) });
+
+                                    lowerAnnotation.map(function(p, i){
+                                        p.overlapOffset = 0;
+                                        p.direction = (p.position > d.centromere ? 1 : -1);
+                                        if (i>0){
+                                            var dist = chromosomeHeight(lowerAnnotation[i].position) - (chromosomeHeight(lowerAnnotation[i-1].position) + lowerAnnotation[i-1].overlapOffset);
+                                            p.overlapOffset = dist < overlapThreshold ? overlapThreshold - dist : 0;
                                         }
-                                    });                                
-                                    phenotype = phenotype.map(function(p){
-                                        p.offsetFix = offsetsBeforeCentromere;
-                                        return p
-                                    })
-                                    return phenotype
+                                    });
+                                    
+                                    return upperAnnotation.concat(lowerAnnotation);
                                 })
+
+                                ///////////////////////////////////////
+
+                                // .data(function(d){
+                                //     d.phenotype = d.phenotype.sort(function(x, y){ return d3.ascending(x.position, y.position) });
+                                //     d.phenotype.map(function(p, i){
+                                //         p.overlapOffset = 0;
+                                //         p.direction = 0;
+                                //         if (i>0){
+                                //             var dist = chromosomeHeight(d.phenotype[i].position) - (chromosomeHeight(d.phenotype[i-1].position) + d.phenotype[i-1].overlapOffset);
+                                //             p.overlapOffset = dist < overlapThreshold ? overlapThreshold - dist : 0;
+                                //         }
+                                //     });
+                                //     return d.phenotype
+                                // })
+
+                                //////////////////////////////////////
+
+                                // .data(function(d){
+                                //     d.phenotype = d.phenotype.sort(function(x, y){ return d3.ascending(x.position, y.position) });
+                                //     var offsets = 0;
+                                //     var offsetsBeforeCentromere = 0;
+                                //     var phenotype = d.phenotype.map(function(p, i){
+                                //         var overlapOffset = 0;
+                                //         var direction = (p.position > d.centromere ? 1 : -1);
+                                //         if (i>0){
+                                //             var dist = chromosomeHeight(d.phenotype[i].position - d.phenotype[i-1].position);
+                                //             overlapOffset = dist < overlapThreshold ? overlapThreshold - dist : 0;
+                                //             offsets += overlapOffset;
+                                //             offsetsBeforeCentromere += direction == -1 ? overlapOffset : 0;
+                                //         }
+                                //         return {
+                                //             position: p.position,
+                                //             label: p.label,
+                                //             direction: direction,
+                                //             overlapOffset: offsets
+                                //         }
+                                //     });                                
+                                //     phenotype = phenotype.map(function(p){
+                                //         p.offsetFix = offsetsBeforeCentromere;
+                                //         return p
+                                //     })
+                                //     return phenotype
+                                // })
                                 .enter()
                                 .append("g")
                                 .attr("class","annot");
 
     var annotationLines = annotation.append("polyline")
                                     .attr("points", function(d) {
-                                        var pos = chromosomeHeight(d.position);return pl([
+                                        var pos = chromosomeHeight(d.position);
+                                        return pl([
                                             [0, pos],
                                             [chrWidth, pos],
-                                            [chrWidth + tipOffSetX, chromosomeHeight(d.position) + d.overlapOffset - d.offsetFix + (d.direction * tipOffSetY)]
+                                            [chrWidth + tipOffSetX, pos + d.overlapOffset + (d.direction * tipOffSetY)]
                                         ])
                                     });
 
     var annotationCircles = annotation.append("circle")   
                                     .attr("cx", chrWidth + tipOffSetX )
-                                    .attr("cy", function(d) { return chromosomeHeight(d.position) + d.overlapOffset - d.offsetFix + (d.direction * tipOffSetY) })
+                                    .attr("cy", function(d) { return chromosomeHeight(d.position) + d.overlapOffset + (d.direction * tipOffSetY) })
                                     .attr("r", tipCircleRadius)
                                     .attr("class", "tip-human");
 }
