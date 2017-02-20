@@ -49,6 +49,7 @@ function chromosummary(chromosomesData){
     var tipOffSetY = 10;
     var tipCircleRadius = 4;
     var overlapThreshold = 1.5 * tipCircleRadius;
+    var groupThreshold = 2;
 
     var blurAmount = 3;
     var blurAlpha = 0.4;
@@ -144,6 +145,7 @@ function chromosummary(chromosomesData){
                                         if (i>0){
                                             var dist = (chromosomeHeight(upperAnnotation[i-1].position) + upperAnnotation[i-1].overlapOffset) - chromosomeHeight(upperAnnotation[i].position);
                                             p.overlapOffset = dist < overlapThreshold ? dist - overlapThreshold : 0;
+                                            console.log(dist < groupThreshold);
                                         }
                                     });
 
