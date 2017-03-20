@@ -1,25 +1,3 @@
-d3.tsv("calli_chromosomes.tsv",function(err,chromosomesData){
-    if (err) throw error;
-    chromosomesData.map(function(x){
-        x.size = parseInt(x.size);
-        x.phenotype = [];
-    });
-    getPhenotype(chromosomesData);
-});
-
-function getPhenotype(chromosomesData){
-    d3.tsv("calli_gwas.tsv",function(err,phenotypeData){
-        phenotypeData.map(function(phenotype){
-            phenotype.position = parseInt(phenotype.position);
-            chromosomesData.filter(function(chromosome){
-                return chromosome.chrname==phenotype.chrname;
-            })[0].phenotype.push(phenotype);
-        })
-        console.log(chromosomesData);
-        chromosummary(chromosomesData);
-    });
-}
-
 function pl(arr){
     return(arr.map(function(x){return x.join()}).join(" "));
 }
