@@ -1,0 +1,32 @@
+svg {
+    border: 1px solid #000;
+    background-color: #EBEEEE;
+}
+.chromosome-group {
+    filter: url(#dropshadow);
+}
+.chromosome-group rect {
+    fill: #FEFEFE;
+}
+.chromosome-group rect,
+.chromosome-group polyline,
+.chromosome-group .annot,
+.chromosome-group line {
+    stroke: rgba(0, 0, 0, 0.5);
+    stroke-width: 1px;
+}
+.chromosome-group polyline {
+    fill: none;
+}
+.chromosome-group .annot .tip-human {
+    fill: #F00;
+}
+div.tooltip {	
+    position: absolute;
+    padding: 10px;
+    font: 16px sans-serif;
+    background: #FFF;
+    border: 1px solid #000;
+    border-radius: 4px;
+    pointer-events: none;
+}
