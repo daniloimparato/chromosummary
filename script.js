@@ -80,7 +80,7 @@ function chromosummary(chromosomesData){
                 .attr("class", "tooltip")
                 .style("opacity", 0);
 
-    var svg = d3.select("body").append("svg")
+    var svg = d3.select("#chromosummary").append("svg")
                             .attr("width", outerWidth)
                             .attr("height", outerHeight)
                             .call(d3.zoom().on("zoom", function () {
