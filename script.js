@@ -15,6 +15,7 @@ function getPhenotype(chromosomesData){
                 return chromosome.chrname==phenotype.chrname;
             })[0].phenotype.push(phenotype);
         })
+        console.log(chromosomesData);
         chromosummary(chromosomesData);
     });
 }
@@ -74,6 +75,10 @@ function chromosummary(chromosomesData){
     var y = d3.scaleLinear()
             .domain([0, maxLineIndex])
             .range([marginTop, yMax]);
+
+    var div = d3.select("body").append("div")
+                .attr("class", "tooltip")
+                .style("opacity", 0);
 
     var svg = d3.select("body").append("svg")
                             .attr("width", outerWidth)
@@ -164,50 +169,6 @@ function chromosummary(chromosomesData){
                                     
                                     return upperAnnotation.concat(lowerAnnotation);
                                 })
-
-                                ///////////////////////////////////////
-
-                                // .data(function(d){
-                                //     d.phenotype = d.phenotype.sort(function(x, y){ return d3.ascending(x.position, y.position) });
-                                //     d.phenotype.map(function(p, i){
-                                //         p.overlapOffset = 0;
-                                //         p.direction = 0;
-                                //         if (i>0){
-                                //             var dist = chromosomeHeight(d.phenotype[i].position) - (chromosomeHeight(d.phenotype[i-1].position) + d.phenotype[i-1].overlapOffset);
-                                //             p.overlapOffset = dist < overlapThreshold ? overlapThreshold - dist : 0;
-                                //         }
-                                //     });
-                                //     return d.phenotype
-                                // })
-
-                                //////////////////////////////////////
-
-                                // .data(function(d){
-                                //     d.phenotype = d.phenotype.sort(function(x, y){ return d3.ascending(x.position, y.position) });
-                                //     var offsets = 0;
-                                //     var offsetsBeforeCentromere = 0;
-                                //     var phenotype = d.phenotype.map(function(p, i){
-                                //         var overlapOffset = 0;
-                                //         var direction = (p.position > d.centromere ? 1 : -1);
-                                //         if (i>0){
-                                //             var dist = chromosomeHeight(d.phenotype[i].position - d.phenotype[i-1].position);
-                                //             overlapOffset = dist < overlapThreshold ? overlapThreshold - dist : 0;
-                                //             offsets += overlapOffset;
-                                //             offsetsBeforeCentromere += direction == -1 ? overlapOffset : 0;
-                                //         }
-                                //         return {
-                                //             position: p.position,
-                                //             label: p.label,
-                                //             direction: direction,
-                                //             overlapOffset: offsets
-                                //         }
-                                //     });                                
-                                //     phenotype = phenotype.map(function(p){
-                                //         p.offsetFix = offsetsBeforeCentromere;
-                                //         return p
-                                //     })
-                                //     return phenotype
-                                // })
                                 .enter()
                                 .append("g")
                                 .attr("class","annot");
@@ -226,64 +187,23 @@ function chromosummary(chromosomesData){
                                     .attr("cx", chrWidth + tipOffSetX )
                                     .attr("cy", function(d) { return chromosomeHeight(d.position) + d.overlapOffset + (d.direction * tipOffSetY) })
                                     .attr("r", tipCircleRadius)
-                                    .attr("class", "tip-human");
+                                    .attr("class", "tip-human")
+                                    .on("mouseover", function(d) {
+                                        var ttHTML = "<b>Gene:</b> "+d.label+"<br/>"
+                                                   + "<b>Chromosome:</b> "+d.chrname+"<br/>"
+                                                   + "<b>Position:</b> "+d.position+"<br/>"
+                                                   + "<hr>";
+                                        
+                                        div.transition()
+                                            .duration(200)
+                                            .style("opacity", .95);
+                                        div.html(ttHTML)
+                                            .style("left", (d3.event.pageX) + "px")
+                                            .style("top", (d3.event.pageY - 28) + "px");
+                                    })
+                                    .on("mouseout", function(d) {
+                                        div.transition()
+                                            .duration(500)
+                                            .style("opacity", 0);
+                                    });
 }
-
-var chromosomesData = [
-    {
-        "size": 160,
-        "centromere": 40,
-        "phenotype":
-        [
-            { "pos": 20, "label": "Teste 1", }
-        ]
-    },
-    {
-        "size": 120,
-        "centromere": 50,
-        "phenotype":
-        [
-            { "pos": 20, "label": "Teste 1", },
-            { "pos": 100, "label": "Teste 2", }
-        ]
-    },
-    {
-        "size": 180,
-        "centromere": 70,
-        "phenotype":
-        [
-            { "pos": 40, "label": "Teste 1", },
-            { "pos": 43, "label": "Teste 2", },
-            { "pos": 46, "label": "Teste 3", },
-            { "pos": 65, "label": "Teste 4", },
-            { "pos": 120, "label": "Teste 5", },
-            { "pos": 125, "label": "Teste 6", }
-        ]
-    },
-    {
-        "size": 120,
-        "centromere": 60,
-        "phenotype":
-        [
-            { "pos": 60, "label": "Teste 1", },
-            { "pos": 120, "label": "Teste 2", },
-            { "pos": 0, "label": "Teste 3", }
-        ]
-    },
-    {
-        "size": 180,
-        "centromere": 80,
-        "phenotype":
-        [
-            { "pos": 40, "label": "Teste 1", },
-            { "pos": 120, "label": "Teste 2", },
-            { "pos": 125, "label": "Teste 3", },
-            { "pos": 130, "label": "Teste 4", },
-            { "pos": 135, "label": "Teste 5", }
-        ]
-    },
-    { "size": 180, "centromere": 90, "phenotype": [ { "pos": 40, "label": "Teste 1", }, { "pos": 120, "label": "Teste 2", }, { "pos": 125, "label": "Teste 3", } ] },
-    { "size": 180, "centromere": 50, "phenotype": [ { "pos": 40, "label": "Teste 1", }, { "pos": 120, "label": "Teste 2", }, { "pos": 125, "label": "Teste 3", } ] },
-    { "size": 180, "centromere": 70, "phenotype": [ { "pos": 75, "label": "Teste 1", }, { "pos": 80, "label": "Teste 2", }, { "pos": 125, "label": "Teste 3", } ] },
-];
-
