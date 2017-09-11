@@ -2,9 +2,26 @@ function pl(arr){
     return(arr.map(function(x){return x.join()}).join(" "));
 }
 
+function sortChromosomesByName(a,b) {
+    a = parseInt(a.substring(3));
+    b = parseInt(b.substring(3));
+    if(isNaN(a) && isNaN(b)) {
+        return 1;
+    } else if(isNaN(a) && !isNaN(b)) {
+        return 1;
+    } else if(!isNaN(a) && isNaN(b)) {
+        return -1;
+    } else {
+        return a > b ? 1 : -1;
+    }
+}
+
 function chromosummary(chromosomesData){
-    chromosomesData.sort(function(x, y){
-        return d3.descending(x.size, y.size);
+    // chromosomesData.sort(function(x, y){
+    //     return d3.descending(x.size, y.size);
+    // });
+    chromosomesData.sort(function(a, b){
+        return sortChromosomesByName(a.chrname, b.chrname);
     });
 
     var marginRight = 100;
@@ -103,6 +120,14 @@ function chromosummary(chromosomesData){
                             var yPos = y(Math.floor(i/chromosomesPerLine));
                             return "translate(" + xPos + "," + yPos + ")"
                         });
+
+    var chromosomeNames = chromosomes.append("text")
+                                    .attr("x", chrWidth/2)
+                                    .attr("y", "-20px")
+                                    .attr("text-anchor","middle")
+                                    .text(function(d){
+                                        return d.chrname;
+                                    })
 
     var upperArms = chromosomes.append("rect")
                             .attr("rx", borderRadius)
