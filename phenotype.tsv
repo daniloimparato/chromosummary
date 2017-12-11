@@ -1,9 +1,9 @@
-chrname	position	label
-1	2000	Phenotype1
-1	3000	Phenotype2
-1	16000	Phenotype2
-1	15000	Phenotype3
-2	3000	Phenotype1
-3	8000	Phenotype1
-4	8000	Phenotype1
-5	8000	Phenotype1
+chrname	position	gene	label
+chr1	2000	HIP1	x
+chr1	21592718	HIP2	y
+chr1	215927180	HIP3	z
+chr1	115927180	HIP4	x
+chr2	3000	HIP5	y
+chr3	8000	HIP6	z
+chr4	8000	HIP7	x
+chr5	8000	HIP8	y

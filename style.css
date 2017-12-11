@@ -19,7 +19,7 @@ svg {
     fill: none;
 }
 .chromosome-group .annot .tip-human {
-    fill: #F00;
+    /*fill: #F00;*/
 }
 div.tooltip {	
     position: absolute;

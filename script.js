@@ -16,10 +16,20 @@ function sortChromosomesByName(a,b) {
     }
 }
 
-function chromosummary(chromosomesData){
+function chromosummary(data){
     // chromosomesData.sort(function(x, y){
     //     return d3.descending(x.size, y.size);
     // });
+    var chromosomesData = data.chromosomesData;
+    
+    var labelColor = {};
+    
+    var numberOfLabels = data.labels.length;
+
+    data.labels.map(function(d,i){
+        labelColor[d] = d3.hsl((360/numberOfLabels)*i,1,0.5,1);
+    });
+
     chromosomesData.sort(function(a, b){
         return sortChromosomesByName(a.chrname, b.chrname);
     });
@@ -190,9 +200,11 @@ function chromosummary(chromosomesData){
                                     .attr("cx", chrWidth + tipOffSetX )
                                     .attr("cy", function(d) { return chromosomeHeight(d.position) + d.overlapOffset + (d.direction * tipOffSetY) })
                                     .attr("r", tipCircleRadius)
+                                    .attr("fill", function(d){return labelColor[d.label]})
                                     .attr("class", "tip-human")
                                     .on("mouseover", function(d) {
-                                        var ttHTML = "<b>Gene:</b> "+d.label+"<br/>"
+                                        var ttHTML = "<b>Gene:</b> "+d.gene+"<br/>"
+                                                   + "<b>Phenotype:</b> "+d.label+"<br/>"
                                                    + "<b>Chromosome:</b> "+d.chrname+"<br/>"
                                                    + "<b>Position:</b> "+d.position+"<br/>"
                                                    + "<hr>";

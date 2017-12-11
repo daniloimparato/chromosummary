@@ -23,7 +23,7 @@
             fill: none;
         }
         .chromosome-group .annot .tip-human {
-            fill: #F00;
+            /*fill: #F00;*/
         }
         div.tooltip {	
             position: absolute;
@@ -52,14 +52,24 @@ d3.tsv("calli_chromosomes.tsv",function(err,chromosomesData){
 });
 
 function getPhenotype(chromosomesData){
-    d3.tsv("calli_gwas.tsv",function(err,phenotypeData){
+    d3.tsv("phenotype.tsv",function(err,phenotypeData){
+
+        var labels = [];
+
         phenotypeData.map(function(phenotype){
             phenotype.position = parseInt(phenotype.position);
             chromosomesData.filter(function(chromosome){
                 return chromosome.chrname==phenotype.chrname;
             })[0].phenotype.push(phenotype);
+
+            labels.push(phenotype.label);
         })
-        chromosummary(chromosomesData);
+
+        labels = labels.filter(function(value, index, self) { 
+            return self.indexOf(value) === index;
+        });
+
+        chromosummary({chromosomesData: chromosomesData, labels: labels});
     });
 }
 </script>
