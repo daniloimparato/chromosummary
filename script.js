@@ -203,11 +203,19 @@ function chromosummary(data){
                                     .attr("fill", function(d){return labelColor[d.label]})
                                     .attr("class", "tip-human")
                                     .on("mouseover", function(d) {
+
+                                        d3.json("https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=pubmed&term="+d.gene+"&retmode=json", function(data) {
+
+                                            d3.select('#pubmed').text(data.esearchresult.idlist.join(', '));
+
+                                        });
+
                                         var ttHTML = "<b>Gene:</b> "+d.gene+"<br/>"
                                                    + "<b>Phenotype:</b> "+d.label+"<br/>"
                                                    + "<b>Chromosome:</b> "+d.chrname+"<br/>"
                                                    + "<b>Position:</b> "+d.position+"<br/>"
-                                                   + "<hr>";
+                                                   + "<hr>"
+                                                   + "<div id='pubmed'></div>";
                                         
                                         div.transition()
                                             .duration(200)

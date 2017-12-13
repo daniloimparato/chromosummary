@@ -52,11 +52,12 @@ d3.tsv("calli_chromosomes.tsv",function(err,chromosomesData){
 });
 
 function getPhenotype(chromosomesData){
-    d3.tsv("phenotype.tsv",function(err,phenotypeData){
+    d3.tsv("calli_gwas_traits.tsv",function(err,phenotypeData){
 
         var labels = [];
 
         phenotypeData.map(function(phenotype){
+            console.log(phenotype);
             phenotype.position = parseInt(phenotype.position);
             chromosomesData.filter(function(chromosome){
                 return chromosome.chrname==phenotype.chrname;
