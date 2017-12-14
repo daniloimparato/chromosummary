@@ -16,7 +16,7 @@ function sortChromosomesByName(a,b) {
     }
 }
 
-function chromosummary(data){
+function chromosummary(data, colorCallback){
     // chromosomesData.sort(function(x, y){
     //     return d3.descending(x.size, y.size);
     // });
@@ -27,14 +27,19 @@ function chromosummary(data){
     var numberOfLabels = data.labels.length;
 
     data.labels.map(function(d,i){
-        labelColor[d] = d3.hsl((360/numberOfLabels)*i,1,0.5,1);
+        labelColor[d] = {
+            id: i,
+            color: d3.hsl((360/numberOfLabels)*i,1,0.5,1)
+        };
     });
+
+    colorCallback(labelColor);
 
     chromosomesData.sort(function(a, b){
         return sortChromosomesByName(a.chrname, b.chrname);
     });
 
-    var marginRight = 100;
+    var marginRight = 200;
     var marginLeft = 100;
     var marginTop = 75;
     var marginBottom = 25;
@@ -52,9 +57,9 @@ function chromosummary(data){
     var labelMargin = 10;
 
     var tipOffSetX = 22;
-    var tipOffSetY = 10;
+    var tipOffSetY = 9;
     var tipCircleRadius = 4;
-    var overlapThreshold = 1.5 * tipCircleRadius;
+    var overlapThreshold = 1.25 * tipCircleRadius;
     var groupThreshold = 2;
 
     var blurAmount = 3;
@@ -83,6 +88,7 @@ function chromosummary(data){
 
     var div = d3.select("body").append("div")
                 .attr("class", "tooltip")
+                // .style("max-width", 100)
                 .style("opacity", 0);
 
     var svg = d3.select("#chromosummary").append("svg")
@@ -163,7 +169,6 @@ function chromosummary(data){
                                         if (i>0){
                                             var dist = (chromosomeHeight(upperAnnotation[i-1].position) + upperAnnotation[i-1].overlapOffset) - chromosomeHeight(upperAnnotation[i].position);
                                             p.overlapOffset = dist < overlapThreshold ? dist - overlapThreshold : 0;
-                                            console.log(dist < groupThreshold);
                                         }
                                     });
 
@@ -184,6 +189,7 @@ function chromosummary(data){
                                 })
                                 .enter()
                                 .append("g")
+                                .attr("data-phenotype", function(d) { return labelColor[d.label].id} )
                                 .attr("class","annot");
 
     var annotationLines = annotation.append("polyline")
@@ -200,13 +206,29 @@ function chromosummary(data){
                                     .attr("cx", chrWidth + tipOffSetX )
                                     .attr("cy", function(d) { return chromosomeHeight(d.position) + d.overlapOffset + (d.direction * tipOffSetY) })
                                     .attr("r", tipCircleRadius)
-                                    .attr("fill", function(d){return labelColor[d.label]})
+                                    .attr("fill", function(d) { return labelColor[d.label].color} )
                                     .attr("class", "tip-human")
                                     .on("mouseover", function(d) {
 
-                                        d3.json("https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=pubmed&term="+d.gene+"&retmode=json", function(data) {
+                                        d3.json("https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=pubmed&term="+d.gene+"&retmax=3&retmode=json", function(pids) {
+                                            
+                                            d3.json("http://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?db=pubmed&id="+pids.esearchresult.idlist.join(',')+"&retmode=json", function(psum) {
+                                            
+                                                console.log(psum);
+                                                
+                                                var titles = [];
 
-                                            d3.select('#pubmed').text(data.esearchresult.idlist.join(', '));
+                                                for(var i=0;i<psum.result.uids.length;i++){
+
+                                                    var current = psum.result.uids[i]; 
+                                                    
+                                                    titles.push(psum.result[current].title);
+
+                                                }
+
+                                                d3.select('#pubmed').html(titles.join('<hr>'));
+
+                                            });
 
                                         });
 
