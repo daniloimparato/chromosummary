@@ -219,7 +219,7 @@ function chromosummary(data, colorCallback){
 
                                         d3.json("https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=pubmed&term="+d.gene+"&retmax=3&retmode=json", function(pids) {
                                             
-                                            d3.json("http://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?db=pubmed&id="+pids.esearchresult.idlist.join(',')+"&retmode=json", function(psum) {
+                                            d3.json("https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?db=pubmed&id="+pids.esearchresult.idlist.join(',')+"&retmode=json", function(psum) {
                                             
                                                 console.log(psum);
                                                 
