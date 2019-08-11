@@ -11,7 +11,7 @@
 <br />
 <p align="center">
   <a href="https://github.com/daniloimparato/chromosummary">
-    <img src="logo.png" alt="Logo" width="80" height="80">
+    <img src="logo.png" alt="Logo" width="160" height="160">
   </a>
 
   <p align="center">
@@ -25,7 +25,7 @@
 <!-- ABOUT THE PROJECT -->
 ## About The Project
 
-[![Product Name Screen Shot][product-screenshot]](https://daniloimparato.github.io/chromosummary)
+[![Chromosummary screenshot][product-screenshot]](https://daniloimparato.github.io/chromosummary)
 
 Work in progress. A D3.js visualization tool for chromosome diagrams.
 
