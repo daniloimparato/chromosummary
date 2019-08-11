@@ -33,7 +33,8 @@ function chromosummary(data, colorCallback){
         };
     });
 
-    colorCallback(labelColor);
+    // colorCallback(labelColor);
+    typeof colorCallback == 'function' && colorCallback(labelColor);;
 
     chromosomesData.sort(function(a, b){
         return sortChromosomesByName(a.chrname, b.chrname);
@@ -44,28 +45,30 @@ function chromosummary(data, colorCallback){
     var marginTop = 75;
     var marginBottom = 25;
 
-    var ySpacing = 200;
+    var ySpacing = 150;
 
     var outerWidth = 1280;
     var outerHeight = 1080;
     var innerWidth = outerWidth - marginLeft - marginRight;
     var innerHeight = outerHeight - marginTop - marginBottom;
 
-    var chrWidth = 18;
+    var chrWidth = 20;
     var borderRadius = 10;
     var spacing = 10;
     var labelMargin = 10;
+    var chrMinHeight = 0;
+    var chrMaxHeight = 200;
 
     var tipOffSetX = 22;
     var tipOffSetY = 9;
     var tipCircleRadius = 4;
-    var overlapThreshold = 1.25 * tipCircleRadius;
+    var overlapThreshold = 1.5 * tipCircleRadius;
     var groupThreshold = 2;
 
-    var blurAmount = 3;
-    var blurAlpha = 0.4;
-    var blurOffsetX = 3;
-    var blurOffsetY = 3;
+    var blurAmount = 1;
+    var blurAlpha = 0.25;
+    var blurOffsetX = 0;
+    var blurOffsetY = 2;
 
     var chromosomesPerLine = 12;
 
@@ -77,7 +80,7 @@ function chromosummary(data, colorCallback){
 
     var chromosomeHeight = d3.scaleLinear()
             .domain([0, chromosomeMaxSize])
-            .range([0, 400]);
+            .range([chrMinHeight, chrMaxHeight]);
 
     var maxLineIndex = Math.ceil(chromosomesData.length / chromosomesPerLine) - 1;
     var yMax = maxLineIndex * (ySpacing + chromosomeHeight(chromosomeMaxSize));
@@ -91,9 +94,11 @@ function chromosummary(data, colorCallback){
                 // .style("max-width", 100)
                 .style("opacity", 0);
 
-    var svg = d3.select("#chromosummary").append("svg")
-                            .attr("width", outerWidth)
-                            .attr("height", outerHeight)
+    var chromosummaryDiv = document.getElementById("chromosummary");
+
+    var svg = d3.select(chromosummaryDiv).append("svg")
+                            .attr("width", chromosummaryDiv.clientWidth)
+                            .attr("height", chromosummaryDiv.clientHeight)
                             .call(d3.zoom().on("zoom", function () {
                                 svg.attr("transform", d3.event.transform)
                             }))
@@ -141,6 +146,8 @@ function chromosummary(data, colorCallback){
                                     .attr("x", chrWidth/2)
                                     .attr("y", "-20px")
                                     .attr("text-anchor","middle")
+                                    .attr("font-weight","bold")
+                                    .attr("fill","#CCC")
                                     .text(function(d){
                                         return d.chrname;
                                     })

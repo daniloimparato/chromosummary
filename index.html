@@ -1,79 +1,91 @@
 <!DOCTYPE html>
 <html>
-<head>
+  <head>
     <style>
-        svg {
-            border: 1px solid #000;
-            background-color: #EBEEEE;
-        }
-        .chromosome-group {
-            filter: url(#dropshadow);
-        }
-        .chromosome-group rect {
-            fill: #FEFEFE;
-        }
-        .chromosome-group rect,
-        .chromosome-group polyline,
-        .chromosome-group .annot,
-        .chromosome-group line {
-            stroke: rgba(0, 0, 0, 0.5);
-            stroke-width: 1px;
-        }
-        .chromosome-group polyline {
-            fill: none;
-        }
-        .chromosome-group .annot .tip-human {
-            /*fill: #F00;*/
-        }
-        div.tooltip {	
-            position: absolute;
-            padding: 10px;
-            font: 16px sans-serif;
-            background: #FFF;
-            border: 1px solid #000;
-            border-radius: 4px;
-            pointer-events: none;
-            max-width: 300px;
-        }
+      html,
+      body,
+      #chromosummary {
+        width: 100%;
+        height: 100%;
+        margin: 0;
+      }
+      svg {
+        /* border: 1px solid #000; */
+        background-color: #ebeeee;
+        font-family: Helvetica;
+      }
+      /* .chromosome-group g {
+        filter: url(#dropshadow);
+      } */
+      .chromosome-group rect {
+        fill: #fefefe;
+        filter: url(#dropshadow);
+      }
+      .chromosome-group rect,
+      .chromosome-group polyline,
+      .chromosome-group .annot,
+      .chromosome-group line {
+        stroke: rgba(150, 150, 150, 1);
+        stroke-width: 2px;
+      }
+      .chromosome-group polyline {
+        fill: none;
+      }
+      .chromosome-group .annot .tip-human {
+        /*fill: #F00;*/
+      }
+      div.tooltip {
+        position: absolute;
+        padding: 10px;
+        font: 16px sans-serif;
+        background: #fff;
+        border: 1px solid #000;
+        border-radius: 4px;
+        pointer-events: none;
+        max-width: 300px;
+      }
     </style>
-</head>
-<body>
-<div id="chromosummary">
-</div>
-<script src="https://d3js.org/d3.v4.min.js"></script>
-<script src="script.js"></script>
-<script>
-d3.tsv("calli_chromosomes.tsv",function(err,chromosomesData){
-    if (err) throw error;
-    chromosomesData.map(function(x){
-        x.size = parseInt(x.size);
-        x.phenotype = [];
-    });
-    getPhenotype(chromosomesData);
-});
-
-function getPhenotype(chromosomesData){
-    d3.tsv("calli_gwas_traits.tsv",function(err,phenotypeData){
-
-        var labels = [];
-
-        phenotypeData.map(function(phenotype){
-            console.log(phenotype);
-            phenotype.position = parseInt(phenotype.position);
-            chromosomesData.filter(function(chromosome){
-                return chromosome.chrname==phenotype.chrname;
-            })[0].phenotype.push(phenotype);
-
-            labels.push(phenotype.label);
-        })
-
-        labels = labels.filter(function(value, index, self) { 
-            return self.indexOf(value) === index;
+  </head>
+  <body>
+    <div id="chromosummary"></div>
+    <script src="https://d3js.org/d3.v4.min.js"></script>
+    <script src="script.js"></script>
+    <script>
+      d3.tsv("calli_chromosomes.tsv", function(err, chromosomesData) {
+        if (err) throw error;
+        chromosomesData.map(function(x) {
+          x.size = parseInt(x.size);
+          x.phenotype = [];
         });
+        getPhenotype(chromosomesData);
+      });
 
-        chromosummary({chromosomesData: chromosomesData, labels: labels});
-    });
-}
-</script>
-</body>
+      function getPhenotype(chromosomesData) {
+        d3.tsv("calli_phenotype.tsv", function(err, phenotypeData) {
+          var labels = [];
+
+          phenotypeData.map(function(phenotype) {
+            //reducing dataset
+            if (Math.random() > 0.9) {
+              phenotype.position = parseInt(phenotype.position);
+              chromosomesData
+                .filter(function(chromosome) {
+                  return chromosome.chrname == phenotype.chrname;
+                })[0]
+                .phenotype.push(phenotype);
+
+              labels.push(phenotype.label);
+            }
+          });
+
+          // removing duplicates
+          labels = labels.filter(function(value, index, self) {
+            return self.indexOf(value) === index;
+          });
+
+          chromosummary({ chromosomesData: chromosomesData, labels: labels });
+        });
+      }
+    </script>
+  </body>
 </html>
