@@ -17,7 +17,7 @@
   <p align="center">
     Work in progress. A D3.js visualization tool for chromosome diagrams.
     <br />
-    <a href="https://daniloimparato.github.io/chromosummary"><strong>Demo</strong></a>
+    <a href="https://daniloimparato.github.io/chromosummary"><h3><strong>Demo</strong></h3></a>
     <br />
   </p>
 </p>
